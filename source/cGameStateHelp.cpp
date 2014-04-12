@@ -1,0 +1,119 @@
+//cGameStateHelp.cpp
+#include "..\includes\cgamestatescore.h"
+#include "..\includes\keystatus.h"
+#include "..\includes\CGameStateHelp.h"
+//#include "..\includes\log_templates.h"
+
+//defined in main.cpp WndProc
+extern HWND	     g_hMainWnd;
+extern UINT      g_Msg;
+extern WPARAM    g_wParam;
+extern LPARAM    g_lParam;
+extern HINSTANCE g_hAppInst;
+extern CHighScore g_HighScore;
+
+cGameStateHelp::cGameStateHelp(void)
+{
+}
+
+cGameStateHelp::~cGameStateHelp(void)
+{
+   ::SelectObject(m_hdcBB, m_hOldSurface);
+  ::DeleteObject(m_hSurface);
+  ::DeleteObject(m_hOldSurface);
+  ::DeleteDC(m_hdcBB);
+  ::DeleteObject(m_hBitmap);
+  //::DeleteObject(m_hHill);
+  //::DeleteObject(m_hHillMask);
+  //::DeleteObject(m_hBitmapMask);
+  //::DeleteObject(m_hBitmapMask2);
+  //::DeleteObject(m_hTileset);
+  ::DeleteObject(m_hOldBrush);
+  ::DeleteObject(m_hBrush);
+  ::DeleteObject(m_hRedBrush);
+  ::DeleteObject(m_hBlueBrush);
+  ::DeleteObject(m_hBlackBrush);
+  ::DeleteObject(m_hYellowBrush);
+}
+
+void cGameStateHelp::initialize(){
+  ::GetWindowRect(g_hMainWnd,&m_RC);
+  m_width = m_RC.right - m_RC.left;
+  m_height = m_RC.bottom - m_RC.top;
+    
+  HDC hdc = ::GetDC(g_hMainWnd);
+  m_hdcBB = ::CreateCompatibleDC(hdc);//backbuffer DC
+
+  m_hSurface = ::CreateCompatibleBitmap(hdc, m_width, m_height);//drawing surface
+  ::ReleaseDC(g_hMainWnd,hdc);
+  m_hOldSurface = (HBITMAP)::SelectObject(m_hdcBB, m_hSurface);
+
+  HBRUSH black = (HBRUSH)::GetStockObject(BLACK_BRUSH);
+  HBRUSH oldBrush = (HBRUSH)::SelectObject(m_hdcBB, m_hSurface);//select white brush
+  ::Rectangle(m_hdcBB, 0, 0, m_width, m_height);//clears with white
+  ::SelectObject(m_hdcBB, oldBrush);
+    
+  m_hBitmap = ::LoadBitmap(g_hAppInst,MAKEINTRESOURCE(IDB_BITMAP9));
+    
+}
+
+void cGameStateHelp::activate(){
+}
+
+
+cGameStateObject* cGameStateHelp::update(){
+
+  for(int i=0; i< m_TE.size(); i++){
+    if (m_TE[i].event == m_event)
+      return m_TE[i].p_gso;
+  }
+  return 0;
+}
+
+void cGameStateHelp::processEvent(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam){
+  m_event = GO_NO_WHERE;
+  
+  if(keyDown(VK_SPACE))
+    m_event = GO_MAIN;
+
+  if(keyDown('H'))
+    m_event = GO_NO_WHERE;
+}
+
+
+void cGameStateHelp::render(){
+  HDC hdcBitmap = ::CreateCompatibleDC(NULL);
+  PAINTSTRUCT ps;
+  HDC hdc = ::BeginPaint(g_hMainWnd, &ps);
+
+  //clear backbuffer with black
+  ::BitBlt(m_hdcBB, 0, 0, m_width, m_height, 0, 0, 0, BLACKNESS);
+  ::SelectObject(m_hdcBB,m_hBlackBrush);
+  ::Rectangle(m_hdcBB,0,0, m_width, m_height);//top border
+
+  //display bitmap for help screen
+  ::SelectObject(hdcBitmap, m_hBitmap);
+  ::BitBlt(m_hdcBB,  0, 0, 800, 600, hdcBitmap,0, 0,SRCCOPY);
+   //copies backbuffer to front buffer
+  ::BitBlt(hdc, 0, 0, m_width, m_height, m_hdcBB, 0, 0, SRCCOPY);
+  ::ReleaseDC(g_hMainWnd, hdc);
+  ::DeleteObject(hdcBitmap);
+  ::EndPaint(g_hMainWnd,&ps); 
+}
+
+void cGameStateHelp::deactivate(){
+}
+void cGameStateHelp::resume(){
+}
+void cGameStateHelp::pause(){
+}
+void cGameStateHelp::save(){
+}
+
+void cGameStateHelp::addTransitionEvent(int event, cGameStateObject* p_Next){
+  TRANSITION_EVENT te;
+  te.event=event;
+  te.p_gso = p_Next;
+
+  m_TE.push_back(te);
+}

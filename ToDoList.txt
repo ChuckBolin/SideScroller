@@ -1,0 +1,39 @@
+//Update 8.4.07
+//To do list for Chuck's sidescroller program
+////1. Enable/disable pause.
+////2. Record play.
+////3. Playback.
+////4. Design/develop 1st level.
+////5. Design/develop 2nd level.
+6. Design/develop 3rd level.
+////7. Code transitions from current level to next level.
+////8. Tally points for tokens, red/black skunks,
+////9. Code battery pickup to increase energy level.
+////10. Countdown time display.
+11. Display level.
+////12. Display token count.
+////13. Code player dies.
+////14. Code new game.
+15. Design/develop help screen with rules.
+////16. Save high scores.
+////17. Read high scores.
+////18. Select MIDI soundtracks.
+19. Implement MIDI playback.
+////20. Implement moving solid platforms (vertical/horizontal).
+////21. Animate critters.
+////22. Add AI for critters(various states).
+////23. Process collection of tokens. 
+////24. Increment lifes based upon tokens. n/a
+////25. Code killing of skunks by jumping on them.
+////26. Program surface detection for lower half blocks (upper works).
+////27. Consider ramps. n/a
+////28. Add small map bottom left corner showing current pos and exit of level.
+29. Improve transitions between level changes and end of game, new game.
+30. Improve logging for information.
+
+Points
+=====
+At end of level
+m_score += 1000 * m_level * m_lives;
+gold tokens = m_level * 10
+silver tokens = m_level * 250
